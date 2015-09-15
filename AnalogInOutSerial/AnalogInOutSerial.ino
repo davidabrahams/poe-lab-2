@@ -15,8 +15,8 @@
  modified 9 Apr 2012
  by Tom Igoe
 
- This example code is in the public domain.
-
+ This example code is in the public domain
+.
  */
 
 // These constants won't change.  They're used to give names
