@@ -2,6 +2,20 @@ import serial
 import threading
 import json
 import math
+ser = serial.Serial('/dev/ttyACM0', 9600)
+
+distances =[]
+
+running = True
+
+t = threading.Thread(target = read_arduino)
+s = raw_input('Press s to start')
+t.start()
+q = raw_input('Press q to quit')
+running = False
+
+save_data()
+
 
 # TODO: THIS IS SO WRONG.
 def calibration(d):
