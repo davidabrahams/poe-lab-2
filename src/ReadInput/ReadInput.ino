@@ -41,15 +41,9 @@ void setup() {
 void loop() {
   // read the value from the sensor:
   sensorValue = analogRead(sensorPin);
-  outputValue = sensorValue * (5.0 / 1023.0);
-  Serial.println(outputValue);
+  Serial.println(sensorValue);
 
-  // turn the ledPin on
-  // digitalWrite(ledPin, HIGH);
-  // stop the program for <sensorValue> milliseconds:
+  // print every half second
   delay(500);
-  // turn the ledPin off:
-  // digitalWrite(ledPin, LOW);
-  // stop the program for for <sensorValue> milliseconds:
   delay(sensorValue);
 }
