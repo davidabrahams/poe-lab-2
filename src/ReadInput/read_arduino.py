@@ -5,6 +5,10 @@ import math
 
 running = True
 
+referenceMv = 5000
+interval = 250  # mV
+distance_list = [150, 140, 130, 100, 60, 50, 40, 35, 30, 25, 20, 15]  # distance in cm for each 250 mV
+
 class StopEvent:
 
     def __init__(self):
@@ -14,8 +18,18 @@ class StopEvent:
         self.is_set = True
 
 
-def calibration(d):
-    return d
+def calibration(val):
+    mV = int(val) * referenceMv / 1023
+    index = mV/interval
+    if index >= len(distance_list) - 1:
+        centimeters = distance_list[-1]
+    else:
+        index = mV / interval
+        frac = (mV % 250) / float(interval)
+        centimeters = distance_list[index] - ((distance_list[index] - distance_list[index + 1]) * frac)
+
+    inches = centimeters / 2.54
+    return inches
 
 def read_arduino(distances, ser, stop_event):
     while not stop_event.is_set:
