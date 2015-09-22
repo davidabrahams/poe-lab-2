@@ -2,6 +2,12 @@ import serial
 import threading
 import json
 import math
+import os
+toplevel_dir = os.path.join(os.path.dirname(__file__),
+    os.path.pardir,
+    os.path.pardir)
+
+filename = os.path.join(toplevel_dir, "data.txt")
 
 running = True
 
@@ -48,16 +54,18 @@ def save_data(distances, fn):
 
 def main():
     distances =[]
-    ser = serial.Serial('/dev/ttyACM0', 9600)
+    
     stop_event = StopEvent()
 
     s = ''
 
     while s.lower() != 's':
         s = raw_input('Press s to start! --> ')
-    ser.readline()
+
+    ser = serial.Serial('/dev/ttyACM0', 9600) 
+    
     t = threading.Thread(target=read_arduino,
-                         args=(distances, ser, stop_event))
+                        args=(distances, ser, stop_event))
     t.start()
 
     q = ''
@@ -65,7 +73,7 @@ def main():
         q = raw_input('Press q to quit! --> ')
 
     stop_event.set()
-    save_data(distances, 'data.txt')
+    save_data(distances, filename)
 
 
 if __name__ == '__main__':
