@@ -56,7 +56,8 @@ def main():
     while s.lower() != 's':
         s = raw_input('Press s to start! --> ')
     ser.readline()
-    t = threading.Thread(target=read_arduino, args=(distances, ser, stop_event))
+    t = threading.Thread(target=read_arduino,
+                         args=(distances, ser, stop_event))
     t.start()
 
     q = ''
