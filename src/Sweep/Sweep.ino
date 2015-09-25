@@ -9,26 +9,71 @@
 
 #include <Servo.h>
 
-Servo myservo;  // create servo object to control a servo
-                // twelve servo objects can be created on most boards
+Servo horz_servo;  // create servo object to control a servo
+Servo vert_servo;  // create servo object to control a servo
 
-int pos = 0;    // variable to store the servo position
+int h_pos = 0;    // variable to store the servo position
+int v_pos = 0;    // variable to store the servo position
+
+int h_degrees = 90;
+int v_degrees = 45;
+
+int h_points = 20;
+int v_points = 5;
 
 void setup()
 {
-  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
+  horz_servo.attach(9);  // attaches the servo on pin 9 to the servo object
+  vert_servo.attach(13);  // attaches the servo on pin 13 to the servo object
+}
+
+// going_down is 1 on way down, 0 on way up
+void horz_sweep(int j, int going_down)
+{
+
+  if (j % 2 == going_down)
+  {
+    for (int i = 0; i < h_points; i += 1)
+    {
+      float h_step_width = (float) h_degrees / h_points;
+      int horz_position = i * h_step_width; // j*step_width
+      horz_servo.write(horz_position);
+      delay(75);
+    }
+  }
+
+  else
+  {
+    for (int i = h_points; i >=0; i -= 1)
+    {
+      float h_step_width = (float) h_degrees / h_points;
+      int horz_position = i * h_step_width; // j*step_width
+      horz_servo.write(horz_position);
+      delay(75);
+    }
+  }
+
 }
 
 void loop()
 {
-  for(pos = 0; pos <= 180; pos += 1) // goes from 0 degrees to 180 degrees
-  {                                  // in steps of 1 degree
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(15);                       // waits 15ms for the servo to reach the position
-  }
-  for(pos = 180; pos>=0; pos-=1)     // goes from 180 degrees to 0 degrees
+
+  for (int j = 0; j < v_points; j += 1)
   {
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    delay(15);                       // waits 15ms for the servo to reach the position
+    float v_step_width = (float) v_degrees / v_points;
+    int vert_position = j * v_step_width; // j*step_width
+    vert_servo.write(vert_position);
+    horz_sweep(j, 1);
+    delay(75);
+  }
+
+  for (int j = v_points - 1; j >= 0; j -= 1)
+  {
+    float step_width = (float) v_degrees / v_points;
+    int vert_position = j * step_width; // j*step_width
+    vert_servo.write(vert_position);
+    horz_sweep(j, 0);
+
+    delay(75);
   }
 }
