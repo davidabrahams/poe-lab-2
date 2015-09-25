@@ -40,7 +40,7 @@ def read_arduino(distances, ser, stop_event):
             print vals
             distances.append(vals)
         except ValueError:
-            pass
+            print "Invalid input received."
 
 def save_data(distances, fn):
     with open(fn, 'w') as outfile:
