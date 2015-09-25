@@ -34,10 +34,13 @@ def calibration(val):
 def read_arduino(distances, ser, stop_event):
     while not stop_event.is_set:
         line = ser.readline()
-        d = float(line[:4])
-        d = calibration(d)
-        print "%f inches" % d
-        distances.append(d)
+        try:
+            vals = [int(s.strip()) for s in line.split(', ')]
+            vals[0] = calibration(vals[0])
+            print vals
+            distances.append(vals)
+        except ValueError:
+            pass
 
 def save_data(distances, fn):
     with open(fn, 'w') as outfile:
@@ -48,12 +51,19 @@ def main():
     ser = serial.Serial('/dev/ttyACM0', 9600)
     stop_event = StopEvent()
 
+    s = ''
+
+    while s.lower() != 's':
+        s = raw_input('Press s to start! --> ')
+    ser.readline()
     t = threading.Thread(target=read_arduino, args=(distances, ser, stop_event))
-    s = raw_input('Press s to start! --> ')
     t.start()
-    q = raw_input('Press q to quit! --> ')
+
+    q = ''
+    while q.lower() != 'q':
+        q = raw_input('Press q to quit! --> ')
+
     stop_event.set()
-    running = False
     save_data(distances, 'data.txt')
 
 
