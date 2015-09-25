@@ -1,13 +1,7 @@
-/* Sweep
- by BARRAGAN <http://barraganstudio.com>
- This example code is in the public domain.
-
- modified 8 Nov 2013
- by Scott Fitzgerald
- http://www.arduino.cc/en/Tutorial/Sweep
-*/
-
 #include <Servo.h>
+
+int sensorPin = A0;  // select the input pin for the potentiometer
+int sensorValue = 0;  // variable to store the value coming from the sensor
 
 Servo horz_servo;  // create servo object to control a servo
 Servo vert_servo;  // create servo object to control a servo
@@ -19,12 +13,18 @@ int h_degrees = 90;
 int v_degrees = 45;
 
 int h_points = 20;
-int v_points = 5;
+int v_points = 10;
+
+int h_delay = 75;
+int v_delay = 75;
+
+unsigned long time;
 
 void setup()
 {
   horz_servo.attach(9);  // attaches the servo on pin 9 to the servo object
   vert_servo.attach(13);  // attaches the servo on pin 13 to the servo object
+  Serial.begin(9600);
 }
 
 // going_down is 1 on way down, 0 on way up
@@ -35,10 +35,14 @@ void horz_sweep(int j, int going_down)
   {
     for (int i = 0; i < h_points; i += 1)
     {
+      time = millis();
       float h_step_width = (float) h_degrees / h_points;
       int horz_position = i * h_step_width; // j*step_width
       horz_servo.write(horz_position);
-      delay(75);
+      sensorValue = analogRead(sensorPin);
+      Serial.println(String(sensorValue) + ", " + String(i) + ", " +
+                     String(j));
+      delay(h_delay - (millis() - time));
     }
   }
 
@@ -46,10 +50,14 @@ void horz_sweep(int j, int going_down)
   {
     for (int i = h_points; i >=0; i -= 1)
     {
+      time = millis();
       float h_step_width = (float) h_degrees / h_points;
       int horz_position = i * h_step_width; // j*step_width
       horz_servo.write(horz_position);
-      delay(75);
+      sensorValue = analogRead(sensorPin);
+      Serial.println(String(sensorValue) + ", " + String(i) + ", " +
+                     String(j));
+      delay(h_delay - (millis() - time));
     }
   }
 
@@ -64,7 +72,8 @@ void loop()
     int vert_position = j * v_step_width; // j*step_width
     vert_servo.write(vert_position);
     horz_sweep(j, 1);
-    delay(75);
+
+    delay(v_delay);
   }
 
   for (int j = v_points - 1; j >= 0; j -= 1)
@@ -74,6 +83,6 @@ void loop()
     vert_servo.write(vert_position);
     horz_sweep(j, 0);
 
-    delay(75);
+    delay(v_delay);
   }
 }
