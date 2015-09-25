@@ -27,10 +27,10 @@
 
  */
 
-int sensorPin = A0;    // select the input pin for the potentiometer
-int ledPin = 13;      // select the pin for the LED
+int sensorPin = A0;  // select the input pin for the potentiometer
+int ledPin = 13;  // select the pin for the LED
 int sensorValue = 0;  // variable to store the value coming from the sensor
-float outputValue = 0;        // value output to the PWM (analog out)
+float outputValue = 0;  // value output to the PWM (analog out)
 
 void setup() {
   // declare the ledPin as an OUTPUT:
