@@ -9,14 +9,14 @@ Servo vert_servo;  // create servo object to control a servo
 int h_pos = 0;    // variable to store the servo position
 int v_pos = 0;    // variable to store the servo position
 
-int h_degrees = 90;
+int h_degrees = 45;
 int v_degrees = 45;
 
-int h_points = 20;
+int h_points = 10;
 int v_points = 10;
 
-int h_delay = 75;
-int v_delay = 75;
+int h_delay = 200;
+int v_delay = 200;
 
 unsigned long time;
 
@@ -39,6 +39,7 @@ void horz_sweep(int j, int going_down)
       float h_step_width = (float) h_degrees / h_points;
       int horz_position = i * h_step_width; // j*step_width
       horz_servo.write(horz_position);
+      delay(h_delay / 2);
       sensorValue = analogRead(sensorPin);
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
@@ -54,6 +55,7 @@ void horz_sweep(int j, int going_down)
       float h_step_width = (float) h_degrees / h_points;
       int horz_position = i * h_step_width; // j*step_width
       horz_servo.write(horz_position);
+      delay(h_delay / 2);
       sensorValue = analogRead(sensorPin);
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
@@ -72,7 +74,6 @@ void loop()
     int vert_position = j * v_step_width; // j*step_width
     vert_servo.write(vert_position);
     horz_sweep(j, 1);
-
     delay(v_delay);
   }
 
@@ -82,7 +83,6 @@ void loop()
     int vert_position = j * step_width; // j*step_width
     vert_servo.write(vert_position);
     horz_sweep(j, 0);
-
     delay(v_delay);
   }
 }

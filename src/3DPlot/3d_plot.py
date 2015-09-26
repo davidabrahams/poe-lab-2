@@ -8,22 +8,29 @@ from numpy import sin, cos, radians
 toplevel_dir = os.path.join(os.path.dirname(__file__),
     os.path.pardir,
     os.path.pardir)
-filename = os.path.join(toplevel_dir, "data.txt")
-v_points =10
-h_points =20
+
+filename = os.path.join(toplevel_dir, "data", "data.txt")
+v_points = 10
+h_points = 10
+
+h_deg_center = 90.0
+v_deg_center = 90.0
+
+h_deg_range = 45.0
+v_deg_range = 45.0
 
 # Due to how our servos and sensor are oriented, at a high index the sensor
 # looks down and left
-h_degrees_min = -45 + 90
-h_degrees_max = 45 + 90
-v_degrees_min = -22.5 + 90
-v_degrees_max = 22.5 + 90
+h_degrees_min = h_deg_center - h_deg_range / 2
+h_degrees_max = h_deg_center + h_deg_range / 2
+v_degrees_min = v_deg_center - v_deg_range / 2
+v_degrees_max = v_deg_center + v_deg_range / 2
 
 
 def read_data(fn):
     #takes in file name (ex: data.txt)
     #reads scanner data
-    with open(fn) as file_obj:
+    with open(fn, 'r') as file_obj:
         scanner_data = json.load(file_obj)
     data_points=np.array(scanner_data)
 
