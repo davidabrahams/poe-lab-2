@@ -12,8 +12,8 @@ int v_pos = 0;    // variable to store the servo position
 int h_degrees = 45;
 int v_degrees = 45;
 
-int h_points = 10;
-int v_points = 10;
+int h_points = 20;
+int v_points = 20;
 
 int h_delay = 200;
 int v_delay = 200;
@@ -40,7 +40,12 @@ void horz_sweep(int j, int going_down)
       int horz_position = i * h_step_width; // j*step_width
       horz_servo.write(horz_position);
       delay(h_delay / 2);
-      sensorValue = analogRead(sensorPin);
+
+      int temp_Value = 0;
+      for (int k = 0; k < 5; k += 1)
+        temp_Value += analogRead(sensorPin);
+      sensorValue = temp_Value / 5;
+
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
       delay(h_delay - (millis() - time));
@@ -56,7 +61,12 @@ void horz_sweep(int j, int going_down)
       int horz_position = i * h_step_width; // j*step_width
       horz_servo.write(horz_position);
       delay(h_delay / 2);
-      sensorValue = analogRead(sensorPin);
+
+      int temp_Value = 0;
+      for (int k = 0; k < 5; k += 1)
+        temp_Value += analogRead(sensorPin);
+      sensorValue = temp_Value / 5;
+
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
       delay(h_delay - (millis() - time));
