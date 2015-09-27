@@ -83,26 +83,28 @@ def save_data(distances, fn):
 
 def main():
 
+    # initialize the data and stop event
     distances =[]
-
     stop_event = StopEvent()
 
+    # ask the user to start the program
     s = ''
-
     while s.lower() != 's':
         s = raw_input('Press s to start! --> ')
 
+    # start reading in data off the arduino
     ser = serial.Serial('/dev/ttyACM0', 9600)
-
     t = threading.Thread(target=read_arduino,
                         args=(distances, ser, stop_event))
     t.start()
 
+    # allow the user to stop at any time0
     q = ''
     while q.lower() != 'q':
         q = raw_input('Press q to quit! --> ')
-
     stop_event.set()
+
+    # after we've stopped, save the data to a file.
     save_data(distances, filename)
 
 
