@@ -15,8 +15,8 @@ int v_degrees = 45;
 int h_points = 20;
 int v_points = 20;
 
-int h_delay = 200;
-int v_delay = 200;
+int h_delay = 100;
+int v_delay = 100;
 
 unsigned long time;
 

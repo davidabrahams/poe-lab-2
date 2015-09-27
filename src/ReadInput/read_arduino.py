@@ -24,19 +24,32 @@ class StopEvent:
     def set(self):
         self.is_set = True
 
+def to_millivolts(val):
+    return int(val * referenceMv / 1023)
 
-def calibration(val):
-    mV = int(val) * referenceMv / 1023
-    index = mV/interval
+def calibration(mV):
+    """
+    >>> calibration(0)
+    150.0
+    >>> calibration(240)
+    140.4
+    >>> calibration(3500)
+    15
+    >>> calibration(260)
+    139.6
+    """
+    index = mV / interval
     if index >= len(distance_list) - 1:
         centimeters = distance_list[-1]
     else:
-        index = mV / interval
-        frac = (mV % 250) / float(interval)
+        frac = (mV % interval) / float(interval)
         centimeters = distance_list[index] - ((distance_list[index] - distance_list[index + 1]) * frac)
 
-    inches = centimeters / 2.54
-    return inches
+    return centimeters
+
+def to_inches(cent):
+
+    return cent / 2.54
 
 def get_angles(indices, anglemin, anglemax, steps):
     angle = anglemin + (float(indices) / steps) * (anglemax - anglemin)
@@ -45,14 +58,14 @@ def get_angles(indices, anglemin, anglemax, steps):
 def read_arduino(distances, ser, stop_event):
     # read the arduino until the user tells it to stop
     while not stop_event.is_set:
-
-        line = ser.readline()
         try:
+
+            line = ser.readline()
             # split it into a list of ints
             vals = [int(s.strip()) for s in line.split(', ')]
 
             # convert the distance to inches
-            vals[0] = calibration(vals[0])
+            vals[0] = to_inches(calibration(to_millivolts(vals[0])))
             print "Adding " + str(vals) + "..."
 
             # this checks for funky input.
@@ -64,6 +77,9 @@ def read_arduino(distances, ser, stop_event):
         except ValueError:
             del distances[:]
             print "Invalid input received. Clearing data."
+        except SerialException, OSError:
+            pass
+            # Just keep chuggin.
 
 def save_data(distances, fn):
 
@@ -78,26 +94,28 @@ def save_data(distances, fn):
 
 def main():
 
+    # initialize the data and stop event
     distances =[]
-
     stop_event = StopEvent()
 
+    # ask the user to start the program
     s = ''
-
     while s.lower() != 's':
         s = raw_input('Press s to start! --> ')
 
+    # start reading in data off the arduino
     ser = serial.Serial('/dev/ttyACM0', 9600)
-
     t = threading.Thread(target=read_arduino,
                         args=(distances, ser, stop_event))
     t.start()
 
+    # allow the user to stop at any time0
     q = ''
     while q.lower() != 'q':
         q = raw_input('Press q to quit! --> ')
-
     stop_event.set()
+
+    # after we've stopped, save the data to a file.
     save_data(distances, filename)
 
 
