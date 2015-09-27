@@ -44,8 +44,11 @@ def calibration(mV):
         frac = (mV % interval) / float(interval)
         centimeters = distance_list[index] - ((distance_list[index] - distance_list[index + 1]) * frac)
 
-    inches = centimeters / 2.54
     return centimeters
+
+def to_inches(cent):
+
+    return cent / 2.54
 
 def read_arduino(distances, ser, stop_event):
     # read the arduino until the user tells it to stop
@@ -57,7 +60,7 @@ def read_arduino(distances, ser, stop_event):
             vals = [int(s.strip()) for s in line.split(', ')]
 
             # convert the distance to inches
-            vals[0] = calibration(to_millivolts(vals[0]))
+            vals[0] = to_inches(calibration(to_millivolts(vals[0])))
             print "Adding " + str(vals) + "..."
 
             # this checks for funky input.
