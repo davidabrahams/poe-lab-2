@@ -23,19 +23,29 @@ class StopEvent:
     def set(self):
         self.is_set = True
 
+def to_millivolts(val):
+    return int(val * referenceMv / 1023)
 
-def calibration(val):
-    mV = int(val) * referenceMv / 1023
-    index = mV/interval
+def calibration(mV):
+    """
+    >>> calibration(0)
+    150.0
+    >>> calibration(240)
+    140.4
+    >>> calibration(3500)
+    15
+    >>> calibration(260)
+    139.6
+    """
+    index = mV / interval
     if index >= len(distance_list) - 1:
         centimeters = distance_list[-1]
     else:
-        index = mV / interval
-        frac = (mV % 250) / float(interval)
+        frac = (mV % interval) / float(interval)
         centimeters = distance_list[index] - ((distance_list[index] - distance_list[index + 1]) * frac)
 
     inches = centimeters / 2.54
-    return inches
+    return centimeters
 
 def read_arduino(distances, ser, stop_event):
     # read the arduino until the user tells it to stop
@@ -47,7 +57,7 @@ def read_arduino(distances, ser, stop_event):
             vals = [int(s.strip()) for s in line.split(', ')]
 
             # convert the distance to inches
-            vals[0] = calibration(vals[0])
+            vals[0] = calibration(to_millivolts(vals[0]))
             print "Adding " + str(vals) + "..."
 
             # this checks for funky input.
