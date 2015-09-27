@@ -1,23 +1,38 @@
 #include <Servo.h>
 
-int sensorPin = A0;  // select the input pin for the potentiometer
+byte sensorPin = A0;  // select the input pin for the IR sensor
 int sensorValue = 0;  // variable to store the value coming from the sensor
 
-Servo horz_servo;  // create servo object to control a servo
-Servo vert_servo;  // create servo object to control a servo
+// create servo objects to control the servos
+Servo horz_servo;
+Servo vert_servo;
 
-int h_pos = 0;    // variable to store the servo position
-int v_pos = 0;    // variable to store the servo position
+// variables to store the servo positions
+int h_pos = 0;
+int v_pos = 0;
 
-int h_degrees = 45;
-int v_degrees = 45;
+// How wide the servos should rotate
+byte h_degrees = 45;
+byte v_degrees = 45;
 
-int h_points = 20;
-int v_points = 20;
+// The number of steps the servos take per sweep.
+byte h_points = 20;
+byte v_points = 20;
 
-int h_delay = 200;
-int v_delay = 200;
+// How many degrees each step should be
+float h_step_width = (float) h_degrees / h_points;
+float v_step_width = (float) v_degrees / v_points;
 
+// How long each step should take.
+byte h_delay = 200;
+byte v_delay = 200;
+
+// How many times we should read the IR sensor at each step. The higher this
+// number, the more accurate the result. This could potentially slow the scan
+// however.
+byte data_read_num = 5;
+
+// variable to store the current time
 unsigned long time;
 
 void setup()
@@ -27,25 +42,28 @@ void setup()
   Serial.begin(9600);
 }
 
-// going_down is 1 on way down, 0 on way up
-void horz_sweep(int j, int going_down)
+// going_down is 1 on way down, 0 on way up. This function sweeps the
+// horizantal servo
+void horz_sweep(byte j, byte going_down)
 {
 
   if (j % 2 == going_down)
   {
-    for (int i = 0; i < h_points; i += 1)
+    for (byte i = 0; i < h_points; i += 1)
     {
-      time = millis();
-      float h_step_width = (float) h_degrees / h_points;
-      int horz_position = i * h_step_width; // j*step_width
-      horz_servo.write(horz_position);
-      delay(h_delay / 2);
+      time = millis();  // register current time
+      h_pos = i * h_step_width;  // set servo to new position
+      horz_servo.write(h_pos);
+      delay(h_delay / 2);  // sleep for half of the wait time to give the servo
+      // time to move before we read in the data
 
+      // probe the sensor multiple times and average the results
       int temp_Value = 0;
-      for (int k = 0; k < 5; k += 1)
+      for (byte k = 0; k < data_read_num; k += 1)
         temp_Value += analogRead(sensorPin);
-      sensorValue = temp_Value / 5;
+      sensorValue = temp_Value / data_read_num;
 
+      // print to the serial and sleep the remaining time
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
       delay(h_delay - (millis() - time));
@@ -54,45 +72,47 @@ void horz_sweep(int j, int going_down)
 
   else
   {
-    for (int i = h_points; i >=0; i -= 1)
+    for (byte i = 0; i < h_points; i += 1)
     {
       time = millis();
-      float h_step_width = (float) h_degrees / h_points;
-      int horz_position = i * h_step_width; // j*step_width
-      horz_servo.write(horz_position);
+      h_pos = i * h_step_width;
+      horz_servo.write(h_pos);
       delay(h_delay / 2);
 
       int temp_Value = 0;
-      for (int k = 0; k < 5; k += 1)
+      for (byte k = 0; k < data_read_num; k += 1)
         temp_Value += analogRead(sensorPin);
-      sensorValue = temp_Value / 5;
+      sensorValue = temp_Value / data_read_num;
 
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
       delay(h_delay - (millis() - time));
     }
   }
-
 }
 
-void loop()
+// this function sweeps the vertical servo down then up, while sweeping the
+// horizantal servo at each step
+void vert_sweep()
 {
-
   for (int j = 0; j < v_points; j += 1)
   {
-    float v_step_width = (float) v_degrees / v_points;
-    int vert_position = j * v_step_width; // j*step_width
-    vert_servo.write(vert_position);
-    horz_sweep(j, 1);
+    v_pos = j * v_step_width;  // set servo to new position
+    vert_servo.write(v_pos);
+    horz_sweep(j, 1);  // sweep the horizantal servo
     delay(v_delay);
   }
 
   for (int j = v_points - 1; j >= 0; j -= 1)
   {
-    float step_width = (float) v_degrees / v_points;
-    int vert_position = j * step_width; // j*step_width
-    vert_servo.write(vert_position);
-    horz_sweep(j, 0);
+    v_pos = j * step_width;  // set servo to new position
+    vert_servo.write(v_pos);
+    horz_sweep(j, 0);  // sweep the horizantal servo
     delay(v_delay);
   }
+}
+
+void loop()
+{
+  vert_sweep();
 }
