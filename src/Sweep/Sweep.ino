@@ -95,7 +95,7 @@ void horz_sweep(byte j, byte going_down)
 // horizantal servo at each step
 void vert_sweep()
 {
-  for (int j = 0; j < v_points; j += 1)
+  for (byte j = 0; j < v_points; j += 1)
   {
     v_pos = j * v_step_width;  // set servo to new position
     vert_servo.write(v_pos);
@@ -103,7 +103,7 @@ void vert_sweep()
     delay(v_delay);
   }
 
-  for (int j = v_points - 1; j >= 0; j -= 1)
+  for (byte j = v_points - 1; j >= 0; j -= 1)
   {
     v_pos = j * step_width;  // set servo to new position
     vert_servo.write(v_pos);
