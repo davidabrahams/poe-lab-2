@@ -53,9 +53,9 @@ def to_inches(cent):
 def read_arduino(distances, ser, stop_event):
     # read the arduino until the user tells it to stop
     while not stop_event.is_set:
-
-        line = ser.readline()
         try:
+
+            line = ser.readline()
             # split it into a list of ints
             vals = [int(s.strip()) for s in line.split(', ')]
 
@@ -72,6 +72,9 @@ def read_arduino(distances, ser, stop_event):
         except ValueError:
             del distances[:]
             print "Invalid input received. Clearing data."
+        except SerialException, OSError:
+            pass
+            # Just keep chuggin.
 
 def save_data(distances, fn):
 
