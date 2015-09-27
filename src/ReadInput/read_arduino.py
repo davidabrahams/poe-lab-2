@@ -3,6 +3,7 @@ import threading
 import json
 import math
 import os
+import sys
 toplevel_dir = os.path.join(os.path.dirname(__file__),
     os.path.pardir,
     os.path.pardir)
@@ -36,6 +37,10 @@ def calibration(val):
 
     inches = centimeters / 2.54
     return inches
+
+def get_angles(indices, anglemin, anglemax, steps):
+    angle = anglemin + (float(indices) / steps) * (anglemax - anglemin)
+    return angle
 
 def read_arduino(distances, ser, stop_event):
     # read the arduino until the user tells it to stop
