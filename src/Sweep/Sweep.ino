@@ -72,7 +72,7 @@ void horz_sweep(byte j, byte going_down)
 
   else
   {
-    for (byte i = 0; i < h_points; i += 1)
+    for (byte i = h_points - 1; i >= 0; i -= 1)
     {
       time = millis();
       h_pos = i * h_step_width;
