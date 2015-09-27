@@ -10,14 +10,18 @@ toplevel_dir = os.path.join(os.path.dirname(__file__),
     os.path.pardir)
 
 filename = os.path.join(toplevel_dir, "data", "data.txt")
-v_points = 10
-h_points = 10
+v_points = 20
+h_points = 20
 
 h_deg_center = 90.0
-v_deg_center = 90.0
+v_deg_center = 50.0
 
 h_deg_range = 45.0
 v_deg_range = 45.0
+
+camera_distance_from_center = 1.25  # inches
+
+thresh_distance = 20  # inches
 
 # Due to how our servos and sensor are oriented, at a high index the sensor
 # looks down and left
@@ -38,16 +42,18 @@ def read_data(fn):
 
 
 def get_angles(indices, anglemin, anglemax, steps):
-    angle = anglemin + (indices.astype(float) / steps) * (anglemax - anglemin)
-    return angle
+    angles = anglemin + (indices.astype(float) / steps) * (anglemax - anglemin)
+    return angles
 
 def get_cartesian(h_angles, v_angles, distances):
     h_rads = radians(h_angles)
     v_rads = radians(v_angles)
 
-    x = distances*sin(v_rads)*cos(h_rads)
-    y = distances* sin(v_rads)*sin(h_rads)
-    z = distances*cos(v_rads)
+    distance_adj = distances - camera_distance_from_center
+
+    x = distance_adj*sin(v_rads)*cos(h_rads)
+    y = distance_adj* sin(v_rads)*sin(h_rads)
+    z = distance_adj*cos(v_rads)
 
     return np.array([x, y, z]).T
 
@@ -70,8 +76,10 @@ def main():
     h_pos_servo = points[:,1]
     v_pos_servo = points[:,2]
     h_angles = get_angles(h_pos_servo, h_degrees_min, h_degrees_max, h_points)
+    # print h_angles
     v_angles = get_angles(v_pos_servo, v_degrees_min, v_degrees_max, v_points)
     cartesian= get_cartesian(h_angles, v_angles, distances)
+    cartesian = cartesian[distances <= thresh_distance]
     x, y, z = cartesian[:, 0], cartesian[:, 1], cartesian[:, 2]
     plot_points(x, y, z)
 
