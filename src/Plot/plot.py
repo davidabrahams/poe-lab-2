@@ -74,10 +74,10 @@ def get_cartesian(h_pos_servos, v_pos_servos, distances):
 def plot_points(x, y, z):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x, y, z)
-    ax.set_xlabel('X Label')
-    ax.set_ylabel('Y Label')
-    ax.set_zlabel('Z Label')
+    ax.scatter(x, y, z, alpha=0.07)
+    ax.set_xlabel('X Position (inches)')
+    ax.set_ylabel('Y Position (inches)')
+    ax.set_zlabel('Z Position (inches)')
     plt.show()
 
 def plot_heat(x, y, z, log=False):
@@ -123,8 +123,8 @@ def main():
     cartesian= get_cartesian(h_pos_servo, v_pos_servo, distances)
     cartesian = cartesian[cartesian[:, 1] <= thresh_distance]
     x, y, z = cartesian[:, 0], cartesian[:, 1], cartesian[:, 2]
-    plot_bool(x, y, z)
-    # plot_points(x, y, z)
+    # plot_bool(x, y, z)
+    plot_points(x, y, z)
 
 if __name__ == '__main__':
     main()
