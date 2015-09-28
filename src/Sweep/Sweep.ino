@@ -16,16 +16,16 @@ byte h_degrees = 45;
 byte v_degrees = 45;
 
 // The number of steps the servos take per sweep.
-byte h_points = 20;
-byte v_points = 20;
+byte h_points = 10;
+byte v_points = 10;
 
 // How many degrees each step should be
 float h_step_width = (float) h_degrees / h_points;
 float v_step_width = (float) v_degrees / v_points;
 
 // How long each step should take.
-byte h_delay = 200;
-byte v_delay = 200;
+byte h_delay = 50;
+byte v_delay = 50;
 
 // How many times we should read the IR sensor at each step. The higher this
 // number, the more accurate the result. This could potentially slow the scan
@@ -49,7 +49,7 @@ void horz_sweep(byte j, byte going_down)
 
   if (j % 2 == going_down)
   {
-    for (byte i = 0; i < h_points; i += 1)
+    for (int i = 0; i < h_points; i += 1)
     {
       time = millis();  // register current time
       h_pos = i * h_step_width;  // set servo to new position
@@ -62,7 +62,6 @@ void horz_sweep(byte j, byte going_down)
       for (byte k = 0; k < data_read_num; k += 1)
         temp_Value += analogRead(sensorPin);
       sensorValue = temp_Value / data_read_num;
-
       // print to the serial and sleep the remaining time
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
@@ -81,11 +80,12 @@ void horz_sweep(byte j, byte going_down)
       horz_servo.write(h_pos);
       delay(h_delay / 2);
 
+      // probe the sensor multiple times and average the results
       int temp_Value = 0;
       for (byte k = 0; k < data_read_num; k += 1)
         temp_Value += analogRead(sensorPin);
       sensorValue = temp_Value / data_read_num;
-
+      // print to the serial and sleep the remaining time
       Serial.println(String(sensorValue) + ", " + String(i) + ", " +
                      String(j));
       delay(h_delay - (millis() - time));
@@ -97,7 +97,7 @@ void horz_sweep(byte j, byte going_down)
 // horizantal servo at each step
 void vert_sweep()
 {
-  for (byte j = 0; j < v_points; j += 1)
+  for (int j = 0; j < v_points; j += 1)
   {
     v_pos = j * v_step_width;  // set servo to new position
     vert_servo.write(v_pos);
@@ -105,7 +105,7 @@ void vert_sweep()
     delay(v_delay);
   }
 
-  for (byte j = v_points - 1; j >= 0; j -= 1)
+  for (int j = v_points - 1; j >= 0; j -= 1)
   {
     v_pos = j * v_step_width;  // set servo to new position
     vert_servo.write(v_pos);
