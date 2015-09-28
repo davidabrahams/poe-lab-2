@@ -72,7 +72,9 @@ void horz_sweep(byte j, byte going_down)
 
   else
   {
-    for (byte i = h_points - 1; i >= 0; i -= 1)
+    // If i is a byte here, the servo does strange things. We do not know why
+    // yet
+    for (int i = h_points - 1; i >= 0; i -= 1)
     {
       time = millis();
       h_pos = i * h_step_width;
