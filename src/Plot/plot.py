@@ -117,10 +117,10 @@ def plot_bool(x, y, z):
 def main():
     #Creates 3d plot from data points
     points = read_data(filename)
-    distances = points[:,0]
-    h_pos_servo = points[:,1]
-    v_pos_servo = points[:,2]
-    cartesian= get_cartesian(h_pos_servo, v_pos_servo, distances)
+    distances = points[:, 0]
+    h_pos_servo = points[:, 1]
+    v_pos_servo = points[:, 2]
+    cartesian = get_cartesian(h_pos_servo, v_pos_servo, distances)
     cartesian = cartesian[cartesian[:, 1] <= thresh_distance]
     x, y, z = cartesian[:, 0], cartesian[:, 1], cartesian[:, 2]
     # plot_bool(x, y, z)
