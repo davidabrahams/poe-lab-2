@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import json
 import os
 from numpy import sin, cos, radians
-import seaborn as sns
+from matplotlib.mlab import griddata
+# import seaborn as sns
 
 toplevel_dir = os.path.join(os.path.dirname(__file__),
     os.path.pardir,
@@ -43,13 +44,22 @@ def read_data(fn):
 
 
 def get_angles(indices, anglemin, anglemax, steps):
+    """
+    >>> get_angles(np.array([28]), h_degrees_min, h_degrees_max, h_points)
+    array([ 99.])
+    >>> get_angles(np.array([9]), v_degrees_min, v_degrees_max, v_points)
+    array([ 77.625])
+
+    """
     angles = anglemin + (indices.astype(float) / steps) * (anglemax - anglemin)
     return angles
 
-def get_cartesian(h_angles, v_angles, distances):
-    h_rads = radians(h_angles)
-    v_rads = radians(v_angles)
+def get_cartesian(h_pos_servos, v_pos_servos, distances):
+    # get the angles from servo positions
+    h_rads = radians(get_angles(h_pos_servos, h_degrees_min, h_degrees_max, h_points))
+    v_rads = radians(get_angles(v_pos_servos, v_degrees_min, v_degrees_max, v_points))
 
+    # adjust for camera offset
     distance_adj = distances - camera_distance_from_center
 
     x = distance_adj*sin(v_rads)*cos(h_rads)
@@ -70,10 +80,19 @@ def plot_points(x, y, z):
 
 # TODO: this doesn't work
 def plot_heat(x, y, z):
-    arr = np.array([x, y, z])
-    arr = arr.T
-    ax = sns.heatmap(arr)
-    sns.plt.show()
+    xi = np.linspace(-15, 15, 50)
+    zi = np.linspace(-15, 15, 50)
+    yi = griddata(x, z, y, xi, zi, interp='linear')
+
+    plt.pcolor(xi, zi, yi)
+    cbar = plt.colorbar()
+
+    ax = plt.gca()
+    ax.set_xlabel('X Position (inches)')
+    ax.set_ylabel('Z Position (inches)')
+    cbar.set_label('Y Position (inches)')
+
+    plt.show()
 
 def main():
     #Creates 3d plot from data points
@@ -81,14 +100,11 @@ def main():
     distances = points[:,0]
     h_pos_servo = points[:,1]
     v_pos_servo = points[:,2]
-    h_angles = get_angles(h_pos_servo, h_degrees_min, h_degrees_max, h_points)
-    # print h_angles
-    v_angles = get_angles(v_pos_servo, v_degrees_min, v_degrees_max, v_points)
-    cartesian= get_cartesian(h_angles, v_angles, distances)
-    cartesian = cartesian[distances <= thresh_distance]
+    cartesian= get_cartesian(h_pos_servo, v_pos_servo, distances)
+    cartesian = cartesian[cartesian[:, 1] <= thresh_distance]
     x, y, z = cartesian[:, 0], cartesian[:, 1], cartesian[:, 2]
+    plot_heat(x, y, z)
     # plot_points(x, y, z)
-    plot_points(x, y, z)
 
 if __name__ == '__main__':
     main()
