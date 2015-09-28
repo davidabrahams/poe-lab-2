@@ -10,11 +10,11 @@ toplevel_dir = os.path.join(os.path.dirname(__file__),
     os.path.pardir)
 
 filename = os.path.join(toplevel_dir, "data", "data.txt")
-v_points = 20
-h_points = 20
+v_points = 40
+h_points = 40
 
 h_deg_center = 90.0
-v_deg_center = 50.0
+v_deg_center = 90.0
 
 h_deg_range = 45.0
 v_deg_range = 45.0
