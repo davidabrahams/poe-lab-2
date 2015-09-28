@@ -5,6 +5,7 @@ import json
 import os
 from numpy import sin, cos, radians
 from matplotlib.mlab import griddata
+from matplotlib.colors import LogNorm
 # import seaborn as sns
 
 toplevel_dir = os.path.join(os.path.dirname(__file__),
@@ -24,6 +25,7 @@ v_deg_range = 45.0
 camera_distance_from_center = 1.25  # inches
 
 thresh_distance = 50  # inches
+cut_off = 17
 
 # Due to how our servos and sensor are oriented, at a high index the sensor
 # looks down and left
@@ -78,11 +80,29 @@ def plot_points(x, y, z):
     ax.set_zlabel('Z Label')
     plt.show()
 
-# TODO: this doesn't work
-def plot_heat(x, y, z):
+def plot_heat(x, y, z, log=False):
     xi = np.linspace(-15, 15, 50)
     zi = np.linspace(-15, 15, 50)
     yi = griddata(x, z, y, xi, zi, interp='linear')
+
+    if log:
+        plt.pcolor(xi, zi, yi, norm=LogNorm(vmin=yi.min(), vmax=yi.max()))
+    else:
+        plt.pcolor(xi, zi, yi)
+    cbar = plt.colorbar()
+
+    ax = plt.gca()
+    ax.set_xlabel('X Position (inches)')
+    ax.set_ylabel('Z Position (inches)')
+    cbar.set_label('Y Position (inches)')
+
+    plt.show()
+
+def plot_bool(x, y, z):
+    xi = np.linspace(-15, 15, 50)
+    zi = np.linspace(-15, 15, 50)
+    yi = griddata(x, z, y, xi, zi, interp='linear')
+    yi = yi <= cut_off
 
     plt.pcolor(xi, zi, yi)
     cbar = plt.colorbar()
@@ -103,7 +123,7 @@ def main():
     cartesian= get_cartesian(h_pos_servo, v_pos_servo, distances)
     cartesian = cartesian[cartesian[:, 1] <= thresh_distance]
     x, y, z = cartesian[:, 0], cartesian[:, 1], cartesian[:, 2]
-    plot_heat(x, y, z)
+    plot_bool(x, y, z)
     # plot_points(x, y, z)
 
 if __name__ == '__main__':
