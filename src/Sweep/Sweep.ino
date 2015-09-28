@@ -16,16 +16,16 @@ byte h_degrees = 45;
 byte v_degrees = 45;
 
 // The number of steps the servos take per sweep.
-byte h_points = 10;
-byte v_points = 10;
+byte h_points = 40;
+byte v_points = 40;
 
 // How many degrees each step should be
 float h_step_width = (float) h_degrees / h_points;
 float v_step_width = (float) v_degrees / v_points;
 
 // How long each step should take.
-byte h_delay = 50;
-byte v_delay = 50;
+byte h_delay = 100;
+byte v_delay = 100;
 
 // How many times we should read the IR sensor at each step. The higher this
 // number, the more accurate the result. This could potentially slow the scan
