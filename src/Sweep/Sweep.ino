@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-byte sensorPin = A0;  // select the input pin for the IR sensor
+int sensorPin = A0;  // select the input pin for the IR sensor
 int sensorValue = 0;  // variable to store the value coming from the sensor
 
 // create servo objects to control the servos
@@ -105,7 +105,7 @@ void vert_sweep()
 
   for (byte j = v_points - 1; j >= 0; j -= 1)
   {
-    v_pos = j * step_width;  // set servo to new position
+    v_pos = j * v_step_width;  // set servo to new position
     vert_servo.write(v_pos);
     horz_sweep(j, 0);  // sweep the horizantal servo
     delay(v_delay);
