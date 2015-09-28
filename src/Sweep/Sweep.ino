@@ -24,8 +24,8 @@ float h_step_width = (float) h_degrees / h_points;
 float v_step_width = (float) v_degrees / v_points;
 
 // How long each step should take.
-byte h_delay = 100;
-byte v_delay = 100;
+byte h_delay = 40;
+byte v_delay = 40;
 
 // How many times we should read the IR sensor at each step. The higher this
 // number, the more accurate the result. This could potentially slow the scan

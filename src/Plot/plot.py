@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import json
 import os
 from numpy import sin, cos, radians
+import seaborn as sns
 
 toplevel_dir = os.path.join(os.path.dirname(__file__),
     os.path.pardir,
@@ -21,7 +22,7 @@ v_deg_range = 45.0
 
 camera_distance_from_center = 1.25  # inches
 
-thresh_distance = 20  # inches
+thresh_distance = 50  # inches
 
 # Due to how our servos and sensor are oriented, at a high index the sensor
 # looks down and left
@@ -67,7 +68,12 @@ def plot_points(x, y, z):
     ax.set_zlabel('Z Label')
     plt.show()
 
-
+# TODO: this doesn't work
+def plot_heat(x, y, z):
+    arr = np.array([x, y, z])
+    arr = arr.T
+    ax = sns.heatmap(arr)
+    sns.plt.show()
 
 def main():
     #Creates 3d plot from data points
@@ -81,6 +87,7 @@ def main():
     cartesian= get_cartesian(h_angles, v_angles, distances)
     cartesian = cartesian[distances <= thresh_distance]
     x, y, z = cartesian[:, 0], cartesian[:, 1], cartesian[:, 2]
+    # plot_points(x, y, z)
     plot_points(x, y, z)
 
 if __name__ == '__main__':
